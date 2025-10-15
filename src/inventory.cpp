@@ -1,6 +1,10 @@
 #include "inventory.h"
 #include <iostream>
 #include <algorithm>
+#include <fstream>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 void Inventory::addItem(const Item &item) {
     // Check if item already exists at this location
@@ -140,4 +144,53 @@ void Inventory::listItemsByLocation(const std::string &location) const {
                   << " (Qty: " << item.getQuantity() << ")\n";
     }
     std::cout << "----------------------------------------\n";
+}
+
+bool Inventory::saveToFile(const std::string& filename) const {
+    try {
+        json j = json::array();
+        
+        for (const auto& item : items) {
+            j.push_back(item.toJson());
+        }
+        
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            std::cerr << "Error: Could not open file for writing: " << filename << "\n";
+            return false;
+        }
+        
+        file << j.dump(4); // Pretty print with 4 space indentation
+        file.close();
+        return true;
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error saving to file: " << e.what() << "\n";
+        return false;
+    }
+}
+
+bool Inventory::loadFromFile(const std::string& filename) {
+    try {
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            // File doesn't exist yet - that's okay for first run
+            return false;
+        }
+        
+        json j;
+        file >> j;
+        file.close();
+        
+        items.clear();
+        for (const auto& itemJson : j) {
+            items.push_back(Item::fromJson(itemJson));
+        }
+        
+        return true;
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error loading from file: " << e.what() << "\n";
+        return false;
+    }
 }

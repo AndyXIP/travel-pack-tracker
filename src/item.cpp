@@ -31,3 +31,19 @@ void Item::removeQuantity(int amount) {
     quantity -= amount;
     if (quantity < 0) quantity = 0;
 }
+
+nlohmann::json Item::toJson() const {
+    return {
+        {"name", name},
+        {"quantity", quantity},
+        {"location", location}
+    };
+}
+
+Item Item::fromJson(const nlohmann::json& j) {
+    return Item(
+        j.at("name").get<std::string>(),
+        j.at("quantity").get<int>(),
+        j.at("location").get<std::string>()
+    );
+}

@@ -2,6 +2,7 @@
 #define ITEM_H
 
 #include <string>
+#include <nlohmann/json.hpp>
 
 class Item {
     private:
@@ -17,6 +18,8 @@ class Item {
         void setLocation(const std::string &loc);
         void addQuantity(int amount);
         void removeQuantity(int amount);
+        nlohmann::json toJson() const;
+        static Item fromJson(const nlohmann::json& j);
 };
 
 #endif

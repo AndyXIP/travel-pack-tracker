@@ -1,6 +1,6 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++23 -Iinclude
+CXXFLAGS = -std=c++23 -Iinclude -I/opt/homebrew/include
 
 # Source files and output binary
 SRC = src/main.cpp src/item.cpp src/inventory.cpp src/commands.cpp

@@ -24,6 +24,8 @@ class Inventory {
         int getTotalItems() const;
         void listItems() const;
         void listItemsByLocation(const std::string &location) const;
+        bool saveToFile(const std::string& filename) const;
+        bool loadFromFile(const std::string& filename);
 };
 
 #endif
