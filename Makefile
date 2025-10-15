@@ -1,12 +1,9 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++23 -Iinclude -I/opt/homebrew/opt/sfml/include
-
-# Linker flags using Homebrew SFML
-LDFLAGS = -L/opt/homebrew/opt/sfml/lib -lsfml-graphics -lsfml-window -lsfml-system -Wl,-rpath,/opt/homebrew/opt/sfml/lib
+CXXFLAGS = -std=c++23 -Iinclude
 
 # Source files and output binary
-SRC = src/main.cpp
+SRC = src/main.cpp src/item.cpp src/inventory.cpp src/commands.cpp
 TARGET = bin/main
 
 # Default rule to build executable
