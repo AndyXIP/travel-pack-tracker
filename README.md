@@ -66,19 +66,16 @@ Key capabilities include adding items with quantities, moving items between loca
 ```
 travel-pack-tracker/
 ├── include/                 # Header files
-│   ├── item.h              # Item class definition
-│   ├── inventory.h         # Inventory management
-│   └── commands.h          # CLI command handlers
-├── src/                    # Implementation files
-│   ├── item.cpp           # Item class implementation
-│   ├── inventory.cpp      # Inventory operations + JSON I/O
-│   ├── commands.cpp       # Command parsing and execution
-│   └── main.cpp           # Application entry point
-├── bin/                    # Compiled binary (generated)
-├── .vscode/               # VS Code configuration
-│   └── c_cpp_properties.json
-├── Makefile               # Build configuration
-├── inventory.json         # Data storage (auto‑generated)
+│   ├── item.h
+│   ├── inventory.h
+│   └── commands.h
+├── src/                     # Implementation files
+│   ├── item.cpp
+│   ├── inventory.cpp        # Inventory operations + JSON I/O
+│   ├── commands.cpp         # Command parsing and execution
+│   └── main.cpp             # Application entry point
+├── Makefile
+├── .gitignore
 ├── LICENSE
 └── README.md
 ```
