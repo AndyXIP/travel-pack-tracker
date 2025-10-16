@@ -3,22 +3,21 @@
 
 #include "inventory.h"
 #include <string>
+#include <vector>
 
 class CommandHandler {
     private:
         Inventory& inventory;
-        void printMenu();
+        void addCommand(const std::vector<std::string>& args);
+        void removeCommand(const std::vector<std::string>& args);
+        void moveCommand(const std::vector<std::string>& args);
+        void listCommand(const std::vector<std::string>& args);
+        void findCommand(const std::vector<std::string>& args);
+        void helpCommand();
         
     public:
         CommandHandler(Inventory& inv);
-        void addItemCommand();
-        void removeItemCommand();
-        void moveItemCommand();
-        void updateQuantityCommand();
-        void listAllItemsCommand();
-        void listItemsByLocationCommand();
-        void findItemCommand();
-        void run();
+        bool execute(int argc, char* argv[]);
 };
 
 #endif

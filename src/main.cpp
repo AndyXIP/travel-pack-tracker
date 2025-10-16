@@ -2,28 +2,14 @@
 #include "commands.h"
 #include <iostream>
 
-int main() {
+int main(int argc, char* argv[]) {
     const std::string filename = "inventory.json";
     
     Inventory inventory;
-    
-    // Load existing data if available
-    if (inventory.loadFromFile(filename)) {
-        std::cout << "Loaded existing inventory from " << filename << "\n";
-        std::cout << "Total items: " << inventory.getTotalItems() << "\n";
-    } else {
-        std::cout << "Starting with empty inventory.\n";
-    }
-    
+    inventory.loadFromFile(filename);
     CommandHandler commandHandler(inventory);
-    commandHandler.run();
-    
-    // Save data on exit
-    if (inventory.saveToFile(filename)) {
-        std::cout << "Inventory saved to " << filename << "\n";
-    } else {
-        std::cerr << "Warning: Failed to save inventory!\n";
-    }
+    commandHandler.execute(argc, argv);
+    inventory.saveToFile(filename);
     
     return 0;
 }

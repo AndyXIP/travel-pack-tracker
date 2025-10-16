@@ -1,143 +1,185 @@
 #include "commands.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
 CommandHandler::CommandHandler(Inventory& inv) : inventory(inv) {}
 
-void CommandHandler::printMenu() {
-    std::cout << "\n=== Travel Pack Tracker ===\n";
-    std::cout << "1. Add item\n";
-    std::cout << "2. Remove item\n";
-    std::cout << "3. Move item between locations\n";
-    std::cout << "4. Update item quantity\n";
-    std::cout << "5. List all items\n";
-    std::cout << "6. List items by location\n";
-    std::cout << "7. Find item\n";
-    std::cout << "8. Exit\n";
-    std::cout << "Choose an option: ";
+void CommandHandler::helpCommand() {
+    std::cout << "Travel Pack Tracker - CLI Usage:\n\n";
+    std::cout << "Commands:\n";
+    std::cout << "  add <name> <quantity> <location>    Add item to inventory\n";
+    std::cout << "      Example: add socks 2 home\n\n";
+    std::cout << "  remove <name> [quantity]            Remove item (or reduce quantity)\n";
+    std::cout << "      Example: remove socks\n";
+    std::cout << "      Example: remove socks 1\n\n";
+    std::cout << "  move <name> <quantity> <from> <to>  Move items between locations\n";
+    std::cout << "      Example: move socks 2 home suitcase\n";
+    std::cout << "      Example: move socks all home suitcase\n\n";
+    std::cout << "  list [location]                     List all items or by location\n";
+    std::cout << "      Example: list\n";
+    std::cout << "      Example: list home\n\n";
+    std::cout << "  find <name>                         Find specific item\n";
+    std::cout << "      Example: find socks\n\n";
+    std::cout << "  help                                Show this help message\n";
 }
 
-void CommandHandler::addItemCommand() {
-    std::string name, location;
-    int quantity;
+void CommandHandler::addCommand(const std::vector<std::string>& args) {
+    // add <name> <quantity> <location>
+    if (args.size() < 3) {
+        std::cout << "Usage: add <name> <quantity> <location>\n";
+        std::cout << "Example: add socks 2 home\n";
+        return;
+    }
     
-    std::cout << "Enter item name: ";
-    std::getline(std::cin, name);
-    std::cout << "Enter quantity: ";
-    std::cin >> quantity;
-    std::cin.ignore();
-    std::cout << "Enter location (e.g., home, suitcase, office): ";
-    std::getline(std::cin, location);
+    std::string name = args[0];
+    int quantity;
+    try {
+        quantity = std::stoi(args[1]);
+    } catch (...) {
+        std::cout << "Error: Quantity must be a number\n";
+        return;
+    }
+    std::string location = args[2];
     
     inventory.addItem(Item(name, quantity, location));
-    std::cout << "Item added successfully!\n";
+    std::cout << "✓ Added " << quantity << "x " << name << " at " << location << "\n";
 }
 
-void CommandHandler::removeItemCommand() {
-    std::string name;
-    std::cout << "Enter item name to remove: ";
-    std::getline(std::cin, name);
-    
-    if (inventory.removeItem(name)) {
-        std::cout << "Item removed successfully!\n";
-    } else {
-        std::cout << "Item not found.\n";
+void CommandHandler::removeCommand(const std::vector<std::string>& args) {
+    // remove <name> [quantity]
+    if (args.empty()) {
+        std::cout << "Usage: remove <name> [quantity]\n";
+        std::cout << "Example: remove socks\n";
+        std::cout << "Example: remove socks 1\n";
+        return;
     }
-}
-
-void CommandHandler::moveItemCommand() {
-    std::string name, fromLoc, toLoc;
-    int qty;
     
-    std::cout << "Enter item name: ";
-    std::getline(std::cin, name);
-    std::cout << "From location: ";
-    std::getline(std::cin, fromLoc);
-    std::cout << "To location: ";
-    std::getline(std::cin, toLoc);
-    std::cout << "Quantity to move (-1 for all): ";
-    std::cin >> qty;
-    std::cin.ignore();
+    std::string name = args[0];
     
-    if (inventory.moveItem(name, fromLoc, toLoc, qty)) {
-        std::cout << "Item moved successfully!\n";
-    } else {
-        std::cout << "Failed to move item. Check item name and location.\n";
-    }
-}
-
-void CommandHandler::updateQuantityCommand() {
-    std::string name;
-    int qty;
-    
-    std::cout << "Enter item name: ";
-    std::getline(std::cin, name);
-    std::cout << "Enter new quantity: ";
-    std::cin >> qty;
-    std::cin.ignore();
-    
-    if (inventory.updateItemQuantity(name, qty)) {
-        std::cout << "Quantity updated successfully!\n";
-    } else {
-        std::cout << "Item not found.\n";
-    }
-}
-
-void CommandHandler::listAllItemsCommand() {
-    inventory.listItems();
-}
-
-void CommandHandler::listItemsByLocationCommand() {
-    std::string location;
-    std::cout << "Enter location: ";
-    std::getline(std::cin, location);
-    inventory.listItemsByLocation(location);
-}
-
-void CommandHandler::findItemCommand() {
-    std::string name;
-    std::cout << "Enter item name: ";
-    std::getline(std::cin, name);
-    
-    auto item = inventory.findItem(name);
-    if (item.has_value()) {
-        std::cout << "\nFound: " << item->getName() 
-                  << "\n  Quantity: " << item->getQuantity()
-                  << "\n  Location: " << item->getLocation() << "\n";
-    } else {
-        std::cout << "Item not found.\n";
-    }
-}
-
-void CommandHandler::run() {
-    std::string choice;
-    
-    std::cout << "Welcome to Travel Pack Tracker!\n";
-    std::cout << "Track your items across home, suitcases, and more.\n";
-    
-    while (true) {
-        printMenu();
-        std::getline(std::cin, choice);
-        
-        if (choice == "1") {
-            addItemCommand();
-        } else if (choice == "2") {
-            removeItemCommand();
-        } else if (choice == "3") {
-            moveItemCommand();
-        } else if (choice == "4") {
-            updateQuantityCommand();
-        } else if (choice == "5") {
-            listAllItemsCommand();
-        } else if (choice == "6") {
-            listItemsByLocationCommand();
-        } else if (choice == "7") {
-            findItemCommand();
-        } else if (choice == "8") {
-            std::cout << "Goodbye!\n";
-            break;
+    if (args.size() == 1) {
+        // Remove entire item
+        if (inventory.removeItem(name)) {
+            std::cout << "✓ Removed " << name << "\n";
         } else {
-            std::cout << "Invalid option. Please try again.\n";
+            std::cout << "✗ Item '" << name << "' not found\n";
+        }
+    } else {
+        // Remove specific quantity
+        int quantity;
+        try {
+            quantity = std::stoi(args[1]);
+        } catch (...) {
+            std::cout << "Error: Quantity must be a number\n";
+            return;
+        }
+        
+        if (inventory.removeItemQuantity(name, quantity)) {
+            std::cout << "✓ Removed " << quantity << "x " << name << "\n";
+        } else {
+            std::cout << "✗ Item '" << name << "' not found\n";
         }
     }
+}
+
+void CommandHandler::moveCommand(const std::vector<std::string>& args) {
+    // move <name> <quantity|all> <from> <to>
+    if (args.size() < 4) {
+        std::cout << "Usage: move <name> <quantity|all> <from> <to>\n";
+        std::cout << "Example: move socks 2 home suitcase\n";
+        std::cout << "Example: move socks all home suitcase\n";
+        return;
+    }
+    
+    std::string name = args[0];
+    int quantity = -1; // -1 means all
+    
+    if (args[1] != "all") {
+        try {
+            quantity = std::stoi(args[1]);
+        } catch (...) {
+            std::cout << "Error: Quantity must be a number or 'all'\n";
+            return;
+        }
+    }
+    
+    std::string fromLoc = args[2];
+    std::string toLoc = args[3];
+    
+    if (inventory.moveItem(name, fromLoc, toLoc, quantity)) {
+        if (quantity == -1) {
+            std::cout << "✓ Moved all " << name << " from " << fromLoc << " to " << toLoc << "\n";
+        } else {
+            std::cout << "✓ Moved " << quantity << "x " << name << " from " << fromLoc << " to " << toLoc << "\n";
+        }
+    } else {
+        std::cout << "✗ Failed to move. Check item name and location.\n";
+    }
+}
+
+void CommandHandler::listCommand(const std::vector<std::string>& args) {
+    if (args.empty()) {
+        // List all items
+        inventory.listItems();
+    } else {
+        // List by location
+        std::string location = args[0];
+        inventory.listItemsByLocation(location);
+    }
+}
+
+void CommandHandler::findCommand(const std::vector<std::string>& args) {
+    if (args.empty()) {
+        std::cout << "Usage: find <name>\n";
+        std::cout << "Example: find socks\n";
+        return;
+    }
+    
+    std::string name = args[0];
+    auto item = inventory.findItem(name);
+    
+    if (item.has_value()) {
+        std::cout << "\n✓ Found: " << item->getName() << "\n";
+        std::cout << "  Quantity: " << item->getQuantity() << "\n";
+        std::cout << "  Location: " << item->getLocation() << "\n";
+    } else {
+        std::cout << "✗ Item '" << name << "' not found\n";
+    }
+}
+
+bool CommandHandler::execute(int argc, char* argv[]) {
+    // If no arguments, show help
+    if (argc < 2) {
+        helpCommand();
+        return false;
+    }
+    
+    std::string command = argv[1];
+    
+    // Build args vector (skip program name and command)
+    std::vector<std::string> args;
+    for (int i = 2; i < argc; i++) {
+        args.push_back(argv[i]);
+    }
+    
+    // Execute command
+    if (command == "add") {
+        addCommand(args);
+    } else if (command == "remove") {
+        removeCommand(args);
+    } else if (command == "move") {
+        moveCommand(args);
+    } else if (command == "list") {
+        listCommand(args);
+    } else if (command == "find") {
+        findCommand(args);
+    } else if (command == "help") {
+        helpCommand();
+    } else {
+        std::cout << "Unknown command: " << command << "\n";
+        std::cout << "Run 'help' to see available commands\n";
+        return false;
+    }
+    
+    return true;
 }
