@@ -29,9 +29,10 @@ void Item::addQuantity(int amount) {
 
 void Item::removeQuantity(int amount) {
     quantity -= amount;
-    if (quantity < 0) quantity = 0;
+    if (quantity < 0) quantity = 0;  // Prevent negative quantities
 }
 
+// Convert to JSON format
 nlohmann::json Item::toJson() const {
     return {
         {"name", name},
@@ -40,6 +41,7 @@ nlohmann::json Item::toJson() const {
     };
 }
 
+// Convert from JSON format
 Item Item::fromJson(const nlohmann::json& j) {
     return Item(
         j.at("name").get<std::string>(),

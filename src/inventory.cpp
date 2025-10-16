@@ -83,10 +83,10 @@ bool Inventory::moveItem(const std::string &name, const std::string &fromLoc, co
     auto item = findItemPtr(name);
     if (item && item->getLocation() == fromLoc) {
         if (quantity == -1 || quantity >= item->getQuantity()) {
-            // Move all
+            // Move all items to new location
             item->setLocation(toLoc);
         } else {
-            // Split item - move some quantity
+            // Split item - move only specified quantity
             item->removeQuantity(quantity);
             items.push_back(Item(name, quantity, toLoc));
         }
@@ -150,17 +150,19 @@ bool Inventory::saveToFile(const std::string& filename) const {
     try {
         json j = json::array();
         
+        // Convert each item to JSON
         for (const auto& item : items) {
             j.push_back(item.toJson());
         }
         
+        // Open file for writing
         std::ofstream file(filename);
         if (!file.is_open()) {
             std::cerr << "Error: Could not open file for writing: " << filename << "\n";
             return false;
         }
         
-        file << j.dump(4); // Pretty print with 4 space indentation
+        file << j.dump(4);
         file.close();
         return true;
         
@@ -174,14 +176,15 @@ bool Inventory::loadFromFile(const std::string& filename) {
     try {
         std::ifstream file(filename);
         if (!file.is_open()) {
-            // File doesn't exist yet - that's okay for first run
             return false;
         }
         
+        // Parse JSON from file
         json j;
         file >> j;
         file.close();
         
+        // Clear existing items and load from JSON
         items.clear();
         for (const auto& itemJson : j) {
             items.push_back(Item::fromJson(itemJson));

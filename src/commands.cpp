@@ -25,7 +25,6 @@ void CommandHandler::helpCommand() {
 }
 
 void CommandHandler::addCommand(const std::vector<std::string>& args) {
-    // add <name> <quantity> <location>
     if (args.size() < 3) {
         std::cout << "Usage: add <name> <quantity> <location>\n";
         std::cout << "Example: add socks 2 home\n";
@@ -34,12 +33,15 @@ void CommandHandler::addCommand(const std::vector<std::string>& args) {
     
     std::string name = args[0];
     int quantity;
+    
+    // Parse quantity (handle non-numeric input)
     try {
         quantity = std::stoi(args[1]);
     } catch (...) {
         std::cout << "Error: Quantity must be a number\n";
         return;
     }
+    
     std::string location = args[2];
     
     inventory.addItem(Item(name, quantity, location));
@@ -47,7 +49,6 @@ void CommandHandler::addCommand(const std::vector<std::string>& args) {
 }
 
 void CommandHandler::removeCommand(const std::vector<std::string>& args) {
-    // remove <name> [quantity]
     if (args.empty()) {
         std::cout << "Usage: remove <name> [quantity]\n";
         std::cout << "Example: remove socks\n";
@@ -83,7 +84,6 @@ void CommandHandler::removeCommand(const std::vector<std::string>& args) {
 }
 
 void CommandHandler::moveCommand(const std::vector<std::string>& args) {
-    // move <name> <quantity|all> <from> <to>
     if (args.size() < 4) {
         std::cout << "Usage: move <name> <quantity|all> <from> <to>\n";
         std::cout << "Example: move socks 2 home suitcase\n";
@@ -92,8 +92,9 @@ void CommandHandler::moveCommand(const std::vector<std::string>& args) {
     }
     
     std::string name = args[0];
-    int quantity = -1; // -1 means all
+    int quantity = -1; // -1 means move all
     
+    // Parse quantity or handle "all" keyword
     if (args[1] != "all") {
         try {
             quantity = std::stoi(args[1]);
@@ -122,7 +123,7 @@ void CommandHandler::listCommand(const std::vector<std::string>& args) {
         // List all items
         inventory.listItems();
     } else {
-        // List by location
+        // List items at specific location
         std::string location = args[0];
         inventory.listItemsByLocation(location);
     }
@@ -148,7 +149,7 @@ void CommandHandler::findCommand(const std::vector<std::string>& args) {
 }
 
 bool CommandHandler::execute(int argc, char* argv[]) {
-    // If no arguments, show help
+    // If no arguments provided, show help
     if (argc < 2) {
         helpCommand();
         return false;
@@ -156,13 +157,13 @@ bool CommandHandler::execute(int argc, char* argv[]) {
     
     std::string command = argv[1];
     
-    // Build args vector (skip program name and command)
+    // Build args vector from remaining command-line arguments
     std::vector<std::string> args;
     for (int i = 2; i < argc; i++) {
         args.push_back(argv[i]);
     }
     
-    // Execute command
+    // Route to appropriate command handler
     if (command == "add") {
         addCommand(args);
     } else if (command == "remove") {
